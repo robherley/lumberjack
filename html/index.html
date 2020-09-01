@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Testing Logs</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono|IBM+Plex+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        font-family: 'IBM Plex Mono', monospace;
+      }
+      .line {
+        margin-bottom: 0.3rem;
+      }
+      .dep {
+        margin-right: 0.5rem;
+        background-color: teal;
+        padding: 0.1rem;
+        border-radius: 4px;
+      }
+      .pod {
+        margin-right: 1rem;
+        background-color: tomato;
+        padding: 0.1rem;
+        border-radius: 4px;
+      }
+      #log {
+        white-space: pre;
+        font-family: monospace;
+        color: white;
+        background-color: black;
+        border-radius: 4px;
+        padding: 1rem;
+        overflow-x: scroll;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="title">logs for namespace:</h1>
+    <div id="log"></div>
+    <script src="https://unpkg.com/ansi_up@4.0.4/ansi_up.js" entry></script>
+    <script>
+      const getLogs = async () => {
+        const ansi = new AnsiUp();
+        const data = await fetch(`/api/v1/logs/runtime*/${window.ns}`);
+        const json = await data.json();
+        const {
+          hits: { hits }
+        } = json;
+        log.innerHTML = '';
+        for (let hit of hits.reverse()) {
+          const { _source: src } = hit;
+          log.innerHTML += `<div class="line">`;
+          log.innerHTML += src.kubernetes.labels.deploymentconfig
+            ? `<span class="dep">${src.kubernetes.labels.deploymentconfig}</span>`
+            : '';
+          log.innerHTML += `<span class="pod">${src.kubernetes.pod_name}</span>`;
+          log.innerHTML += ansi.ansi_to_html(src.message);
+          log.innerHTML += `</div>`;
+        }
+        console.log(hits);
+      };
+
+      window.onload = async () => {
+        const searchParams = new URLSearchParams(window.location.search);
+        const ns = searchParams.get('namespace');
+        window.ns = ns ? ns : '*';
+        title.innerText += ` ${window.ns}`;
+        await getLogs();
+        setInterval(getLogs, 5000);
+      };
+    </script>
+  </body>
+</html>

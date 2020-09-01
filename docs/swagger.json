@@ -1,0 +1,90 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This API interacts with an elasticsearch instance to return logs",
+        "title": "Lumberjack",
+        "contact": {
+            "name": "Rob Herley",
+            "email": "robert.herley@ibm.com"
+        },
+        "license": {},
+        "version": "1.0"
+    },
+    "basePath": "/",
+    "paths": {
+        "/api/v1/logs/{index}/{namespace}": {
+            "get": {
+                "description": "gets most recent logs in a project",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "logs"
+                ],
+                "summary": "gets most recent logs in a project",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ElasticSearch Index",
+                        "name": "index",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project/Namespace",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/healthz": {
+            "get": {
+                "description": "health check endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "health check endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/routes.healthCheck"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "routes.healthCheck": {
+            "type": "object",
+            "properties": {
+                "timestamptz": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

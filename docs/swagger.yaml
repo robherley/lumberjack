@@ -1,0 +1,60 @@
+basePath: /
+definitions:
+  routes.healthCheck:
+    properties:
+      timestamptz:
+        type: string
+    type: object
+info:
+  contact:
+    email: robert.herley@ibm.com
+    name: Rob Herley
+  description: This API interacts with an elasticsearch instance to return logs
+  license: {}
+  title: Lumberjack
+  version: "1.0"
+paths:
+  /api/v1/logs/{index}/{namespace}:
+    get:
+      consumes:
+      - application/json
+      description: gets most recent logs in a project
+      parameters:
+      - description: ElasticSearch Index
+        in: path
+        name: index
+        required: true
+        type: string
+      - description: Project/Namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      summary: gets most recent logs in a project
+      tags:
+      - logs
+  /healthz:
+    get:
+      consumes:
+      - application/json
+      description: health check endpoint
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/routes.healthCheck'
+      summary: health check endpoint
+      tags:
+      - health
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
